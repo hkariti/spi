@@ -2,37 +2,37 @@ import spidev
 
 spi = spidev.SpiDev()
 
-class ConfigRegister(object):
-    MASK_RX_DR = 0
-    MASK_TX_DS = 0
-    MASK_MAX_RT = 0
-    EN_CRC = 0
-    CRCO = 0
-    PWR_UP = 0
-    PRIM_RX = 0
+class Register(object):
+    _bits = ()
 
-    def __init__(self, config=0):
-        self.unpack(config)
+    def __init__(self, from_int=0, **kwargs):
+        for bit in _bits:
+            setattr(self, bit, kwargs.get(bit, 0))
+        if from_int:
+            self.unpack(from_int)
 
     def pack(self):
-        config = 0
-        for index, flag in enumerate((self.PRIM_RX, self.PWR_UP, self.CRCO, self.EN_CRC, self.MASK_MAX_RT, self.MASK_TX_DS, self.MASK_RX_DR)):
-            config = config | (flag << index)
-        return config
+        value = 0
+        for index, flag in enumerate(self._bits):
+            value = value | (getattr(self, flag) << index)
+        return value
     
-    def unpack(self, config):
-        for index, flag_name in enumerate(("PRIM_RX", "PWR_UP", "CRCO", "EN_CRC", "MASK_MAX_RT", "MASK_TX_DS", "MASK_RX_DR")):
-            setattr(self, flag_name, (config >> index) & 1)
+    def unpack(self, value):
+        for index, flag_name in enumerate(self._bits):
+            setattr(self, flag_name, (value >> index) & 1)
 
     def __repr__(self):
         desc = '' 
-        for flag_name in ("PRIM_RX", "PWR_UP", "CRCO", "EN_CRC", "MASK_MAX_RT", "MASK_TX_DS", "MASK_RX_DR"):
+        for flag_name in self._bits:
             desc += "{0}: {1}\n".format(flag_name, getattr(self, flag_name))
 
         return desc
  
     def __eq__(self, target):
         return self.pack == target
+
+class ConfigRegister(Register):
+    _bits = ( "PRIM_RX", "PWR_UP", "CRCO", "EN_CRC", "MASK_MAX_RT", "MASK_TX_DS", "MASK_RX_DR" )
 
 def read_register(register, size=1):
     if register < 0 or register > 31:
