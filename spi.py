@@ -28,6 +28,8 @@ class ConfigRegister(object):
         desc = '' 
         for flag_name in ("PRIM_RX", "PWR_UP", "CRCO", "EN_CRC", "MASK_MAX_RT", "MASK_TX_DS", "MASK_RX_DR"):
             desc += "{0}: {1}\n".format(flag_name, getattr(self, flag_name))
+
+        return desc
  
     def __eq__(self, target):
         return self.unpack == target
