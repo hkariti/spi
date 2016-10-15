@@ -32,7 +32,7 @@ class ConfigRegister(object):
         return desc
  
     def __eq__(self, target):
-        return self.unpack == target
+        return self.pack == target
 
 def read_register(register, size=1):
     if register < 0 or register > 31:
