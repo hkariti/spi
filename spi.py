@@ -24,10 +24,11 @@ class ConfigRegister(object):
         for index, flag_name in enumerate(("PRIM_RX", "PWR_UP", "CRCO", "EN_CRC", "MASK_MAX_RT", "MASK_TX_DS", "MASK_RX_DR")):
             setattr(self, flag_name, (config >> index) & 1)
 
-    def __str__(self):
+    def __repr__(self):
+        desc = '' 
         for flag_name in ("PRIM_RX", "PWR_UP", "CRCO", "EN_CRC", "MASK_MAX_RT", "MASK_TX_DS", "MASK_RX_DR"):
-            print "%s: %d" % (flag_name, getattr(self, flag_name))
-
+            desc += "{0}: {1}\n".format(flag_name, getattr(self, flag_name))
+ 
     def __eq__(self, target):
         return self.unpack == target
 
